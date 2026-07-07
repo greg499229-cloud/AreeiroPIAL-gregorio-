@@ -21,17 +21,31 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+html {
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    overscroll-behavior: none;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
     height: 100vh;
+    height: 100dvh; /* viewport dinâmico: evita sobra de espaço por causa da barra do navegador em celulares */
+    width: 100%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: fixed;
+    inset: 0;
+    overscroll-behavior: none;
+    touch-action: pan-x pan-y;
 }
 
-.app-wrapper { display: flex; flex-direction: column; height: 100vh; }
+.app-wrapper { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
 
 /* BARRA SUPERIOR — 3 LINHAS (nome / ferramentas / paleta+data) */
 .header-bar {
@@ -112,6 +126,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    touch-action: none;
 }
 
 #canvas {
@@ -141,9 +156,7 @@ body {
 }
 .btn:hover:not(:disabled) { background: #3a3a3a; }
 .btn:disabled { opacity: 0.15; cursor: not-allowed; }
-.btn-primary { background: var(--accent-blue); border: none; }
 .btn-success { background: var(--accent-green); border: none; }
-.btn-danger { background: var(--accent-red); border: none; }
 .btn-whats { background: var(--accent-whats); border: none; color: #06210f; }
 .btn-defeitos { background: #7c3aed; border: none; position: relative; }
 
@@ -164,29 +177,6 @@ body {
     padding: 0 3px;
     line-height: 1;
 }
-
-/* PALETA */
-.palette-group {
-    display: flex;
-    align-items: center;
-    background: var(--panel-darker);
-    padding: 3px 5px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-}
-
-.grid-cores { display: flex; gap: 4px; }
-.cor {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: transform 0.1s ease;
-}
-.cor:hover { transform: scale(1.1); }
-.cor.selecionada { border-color: white; transform: scale(1.15); box-shadow: 0 0 4px rgba(255,255,255,0.6); }
-.cor[data-cor="white"] { border: 1px solid #555555; }
 
 /* LOADING */
 .loading-overlay {
@@ -221,54 +211,19 @@ body {
 .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 100; }
 .modal-content { background: var(--panel-dark); padding: 20px; border-radius: 12px; max-width: 260px; text-align: center; border: 1px solid var(--border-color); }
 
-/* ====== PAINEL INFERIOR DE PENDÊNCIAS (HOME) ====== */
-.bottom-panel {
-    flex-shrink: 0;
-    background: var(--panel-dark);
-    border-top: 1px solid var(--border-color);
-    max-height: 110px;
-    display: flex;
-    flex-direction: column;
-}
-
-.bottom-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 10px;
-    flex-shrink: 0;
-}
-
-.bottom-panel-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.bottom-panel-list {
-    overflow-y: auto;
-    padding: 0 10px 8px 10px;
-    flex: 1;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.bottom-panel-list::-webkit-scrollbar {
-    display: none;
-}
+/* ====== PENDÊNCIAS (usado dentro do modal de Defeitos) ====== */
 
 .pendencia-item {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     background: #242424;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 5px 8px;
-    margin-bottom: 4px;
-    font-size: 11px;
+    border-left: 3px solid #ffb84d;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 15px;
 }
 
 .pendencia-top-row {
@@ -278,13 +233,13 @@ body {
     gap: 8px;
 }
 
-.pendencia-texto { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pendencia-texto { flex: 1; overflow-wrap: break-word; }
 .pendencia-texto b { color: #ffb84d; }
 
 .pendencia-nota-row {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
 }
 
 .pendencia-nota-input {
@@ -292,10 +247,10 @@ body {
     min-width: 0;
     background: #1a1a1a;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 6px;
     color: var(--text-main);
-    font-size: 11px;
-    padding: 3px 6px;
+    font-size: 14px;
+    padding: 8px 10px;
     outline: none;
     font-family: inherit;
 }
@@ -307,12 +262,26 @@ body {
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 20px;
     line-height: 1;
-    padding: 0 2px;
+    padding: 0 4px;
     flex-shrink: 0;
 }
 .pendencia-del:hover { color: var(--accent-red); }
+
+.presenca-row {
+    width: 100%;
+    padding: 3px 10px 2px 10px;
+    font-size: 10px;
+    color: #6adf8a;
+}
+
+.ultima-alteracao-row {
+    width: 100%;
+    padding: 2px 10px 3px 10px;
+    font-size: 10px;
+    color: var(--text-muted);
+}
 
 .pendencia-vazio {
     font-size: 11px;
@@ -365,16 +334,16 @@ body {
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 18px;
 }
 
 .mf-field label {
     display: block;
     font-size: 11px;
     font-weight: 700;
-    color: var(--text-muted);
+    color: var(--text-main);
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.5px;
     margin-bottom: 6px;
 }
 
@@ -398,8 +367,10 @@ body {
     align-items: center;
     gap: 8px;
     color: var(--text-muted);
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 400;
+    opacity: 0.6;
+    margin: -4px 0;
 }
 .mf-divisor::before, .mf-divisor::after {
     content: "";
@@ -435,9 +406,18 @@ body {
 .mf-lista-titulo {
     font-size: 11px;
     font-weight: 700;
-    color: var(--text-muted);
+    color: var(--text-main);
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.5px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.mf-lista-titulo .contador {
+    color: var(--text-muted);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
 }
 
 #mfOutroWrapper { display: none; }
@@ -463,15 +443,12 @@ body {
 
         <div class="controls-row">
             <button class="btn" id="toolData">📅 Data</button>
-            <div class="palette-group">
-                <div class="grid-cores">
-                    <div class="cor selecionada" style="background: #ffff00;" data-cor="yellow"></div>
-                    <div class="cor" style="background: #ffffff;" data-cor="white"></div>
-                </div>
-            </div>
             <button class="btn" id="undoBtn" disabled>↩️ Desfazer</button>
-            <button class="btn btn-danger" id="resetBtn">🔄 Reset</button>
+            <button class="btn" id="atualizarBtn">🔄 Atualizar</button>
+            <button class="btn" id="lockBtn">🔒 Visualização</button>
         </div>
+        <div class="presenca-row" id="presencaRow" style="display:none;"></div>
+        <div class="ultima-alteracao-row" id="ultimaAlteracaoRow" style="display:none;"></div>
     </header>
 
     <div class="main-layout">
@@ -486,16 +463,6 @@ body {
             </div>
         </main>
     </div>
-
-    <!-- RESUMO COMPACTO DE PENDÊNCIAS NA HOME -->
-    <section class="bottom-panel">
-        <div class="bottom-panel-header">
-            <span class="bottom-panel-title">Pendências</span>
-        </div>
-        <div class="bottom-panel-list" id="listaPendenciasHome">
-            <div class="pendencia-vazio">Nenhum defeito registrado ainda.</div>
-        </div>
-    </section>
 </div>
 
 <!-- MODAL DE SALVAR IMAGEM -->
@@ -544,7 +511,12 @@ body {
         </div>
 
         <div class="mf-field">
-            <div class="mf-lista-titulo" style="margin-bottom:8px;">Itens já registrados</div>
+            <label>Nota de manutenção</label>
+            <input type="text" class="mf-input" id="mfNotaInput" placeholder="Opcional — deixe em branco se ainda não tiver">
+        </div>
+
+        <div class="mf-field">
+            <div class="mf-lista-titulo" style="margin-bottom:8px;">Itens já registrados <span class="contador" id="contadorItensLista"></span></div>
             <div id="listaPendenciasModal">
                 <div class="pendencia-vazio">Nenhum defeito registrado ainda.</div>
             </div>
@@ -559,7 +531,7 @@ body {
 <!-- Firebase: sincroniza pendências e status das linhas entre todos os usuários -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, updateDoc, deleteField, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyATcDCKHfO1Z9-miHvBagJtMrFvV28IKHA",
@@ -581,6 +553,27 @@ body {
         });
     };
 
+    // Atualiza só a presença deste aparelho, sem sobrescrever a de outros usuários.
+    window.firestoreAtualizarPresenca = function(deviceId, dados) {
+        updateDoc(docRef, { ["presencas." + deviceId]: dados }).catch(function(e) {
+            console.error("Erro ao atualizar presença:", e);
+        });
+    };
+
+    // Remove a presença deste aparelho (ao travar a edição ou fechar o app).
+    window.firestoreRemoverPresenca = function(deviceId) {
+        updateDoc(docRef, { ["presencas." + deviceId]: deleteField() }).catch(function(e) {
+            console.error("Erro ao remover presença:", e);
+        });
+    };
+
+    // Busca o estado atual uma única vez (usado pelo botão "Atualizar").
+    window.firestoreBuscarUmaVez = function() {
+        return getDoc(docRef).then(function(snapshot) {
+            return snapshot.exists() ? snapshot.data() : null;
+        });
+    };
+
     // Recebe em tempo real as mudanças feitas por qualquer usuário (incluindo os próprios).
     onSnapshot(docRef, function(snapshot) {
         if (snapshot.exists() && typeof window.aplicarDadosRemotos === 'function') {
@@ -597,8 +590,158 @@ const ctx = canvas.getContext("2d", { willReadFrequently: true });
 const zoomContainer = document.getElementById("zoomContainer");
 const loadingOverlay = document.getElementById("loadingOverlay");
 
-let corAtual = [255, 255, 0, 255];
 let historico = [];
+let ordemAcoes = []; // guarda o "tipo" de cada entrada do histórico (manual, equipamento, linha, data)
+let proximoTipoAcao = { tipo: 'manual' }; // definido antes de cada pintura, para saber o que desfazer depois
+let suprimirHistorico = false; // true durante reconstruções em lote (evita centenas de leituras/gravações pesadas)
+let dataRegistrada = null; // guarda a data exata do carimbo (ex: "07/07/2026"), sincronizada com o Firestore
+
+// ==================== MODO EDIÇÃO / SOMENTE VISUALIZAÇÃO ====================
+const PIN_EDICAO = "4992"; // troque este número para definir a senha de edição
+let modoEdicao = (localStorage.getItem('modo_edicao_desbloqueado') === 'true');
+
+// Identifica este aparelho e a pessoa que está usando ele.
+let deviceId = localStorage.getItem('device_id');
+if (!deviceId) {
+    deviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    localStorage.setItem('device_id', deviceId);
+}
+let nomeUsuario = localStorage.getItem('nome_usuario') || '';
+let intervaloPresenca = null;
+
+// Guarda só a ÚLTIMA alteração feita (sobrescreve, não acumula histórico).
+let ultimaAlteracao = null; // { texto, autor, quando }
+
+function registrarAtividade(texto) {
+    ultimaAlteracao = { texto: texto, autor: nomeUsuario || 'Anônimo', quando: Date.now() };
+    renderizarUltimaAlteracao();
+}
+
+function formatarTempoRelativo(timestamp) {
+    const diffSeg = Math.floor((Date.now() - timestamp) / 1000);
+    if (diffSeg < 60) return 'agora mesmo';
+    const diffMin = Math.floor(diffSeg / 60);
+    if (diffMin < 60) return 'há ' + diffMin + ' min';
+    const diffHoras = Math.floor(diffMin / 60);
+    if (diffHoras < 24) return 'há ' + diffHoras + 'h';
+    return 'há ' + Math.floor(diffHoras / 24) + 'd';
+}
+
+function renderizarUltimaAlteracao() {
+    const linha = document.getElementById('ultimaAlteracaoRow');
+    if (!ultimaAlteracao) {
+        linha.style.display = 'none';
+        return;
+    }
+    linha.style.display = 'block';
+    linha.textContent = '🕒 Última alteração: ' + ultimaAlteracao.texto + ' — ' +
+        ultimaAlteracao.autor + ' • ' + formatarTempoRelativo(ultimaAlteracao.quando);
+}
+
+// Mantém o "há X min" atualizado mesmo sem novas alterações.
+setInterval(renderizarUltimaAlteracao, 30000);
+
+// Atualiza a presença deste aparelho (mostra "quem está editando agora" para todos).
+function atualizarPresenca() {
+    if (!modoEdicao || !nomeUsuario) return;
+    if (typeof window.firestoreAtualizarPresenca === 'function') {
+        window.firestoreAtualizarPresenca(deviceId, { nome: nomeUsuario, ultimaAtividade: Date.now() });
+    }
+}
+
+function iniciarPresenca() {
+    atualizarPresenca();
+    if (intervaloPresenca) clearInterval(intervaloPresenca);
+    intervaloPresenca = setInterval(atualizarPresenca, 20000); // renova a cada 20s
+}
+
+function pararPresenca() {
+    if (intervaloPresenca) { clearInterval(intervaloPresenca); intervaloPresenca = null; }
+    if (typeof window.firestoreRemoverPresenca === 'function') {
+        window.firestoreRemoverPresenca(deviceId);
+    }
+}
+
+window.addEventListener('beforeunload', pararPresenca);
+
+// Mostra, no cabeçalho, quem está editando agora (presença nos últimos 60s).
+function renderizarPresenca(presencas) {
+    const linha = document.getElementById('presencaRow');
+    const agora = Date.now();
+    const nomes = Object.keys(presencas || {})
+        .map(function(id) { return presencas[id]; })
+        .filter(function(p) { return p && (agora - p.ultimaAtividade) < 60000; })
+        .map(function(p) { return p.nome; });
+
+    if (nomes.length === 0) {
+        linha.style.display = 'none';
+        linha.textContent = '';
+        return;
+    }
+    linha.style.display = 'block';
+    linha.textContent = '🟢 Editando agora: ' + nomes.join(', ');
+}
+
+function aplicarModoInterface() {
+    const bloquear = !modoEdicao;
+    const lockBtn = document.getElementById('lockBtn');
+    lockBtn.textContent = modoEdicao ? '🔓 Edição' : '🔒 Visualização';
+
+    [
+        document.getElementById('toolData'),
+        document.getElementById('filtroVasos'),
+        document.getElementById('filtroSilos'),
+        document.getElementById('selectDefeito'),
+        document.getElementById('adicionarDefeitoBtn')
+    ].forEach(function(el) {
+        if (!el) return;
+        el.disabled = bloquear ? true : el.disabled; // se destravar, respeita a regra normal de habilitação
+        el.style.opacity = bloquear ? '0.4' : '';
+    });
+    if (!bloquear) {
+        // Restaura o botão "Adicionar" para o estado que a seleção de filtros já define.
+        adicionarDefeitoBtn.disabled = !(obterEquipamentoSelecionado() && obterDefeitoSelecionado());
+        document.getElementById('filtroVasos').disabled = false;
+        document.getElementById('filtroSilos').disabled = false;
+        document.getElementById('selectDefeito').disabled = false;
+        document.getElementById('toolData').disabled = false;
+    }
+
+    if (bloquear) {
+        document.getElementById('undoBtn').disabled = true;
+    } else {
+        atualizarBotaoUndo();
+    }
+
+    renderizarPendencias();
+}
+
+document.getElementById('lockBtn').addEventListener('click', function() {
+    if (modoEdicao) {
+        modoEdicao = false;
+        localStorage.setItem('modo_edicao_desbloqueado', 'false');
+        pararPresenca();
+        aplicarModoInterface();
+    } else {
+        const senha = prompt('Digite o PIN para habilitar a edição:');
+        if (senha === null) return;
+        if (senha === PIN_EDICAO) {
+            if (!nomeUsuario) {
+                let nome = prompt('Qual o seu nome? (aparece nas atividades e defeitos registrados)');
+                nome = (nome || '').trim();
+                if (!nome) nome = 'Anônimo';
+                nomeUsuario = nome;
+                localStorage.setItem('nome_usuario', nomeUsuario);
+            }
+            modoEdicao = true;
+            localStorage.setItem('modo_edicao_desbloqueado', 'true');
+            iniciarPresenca();
+            aplicarModoInterface();
+        } else {
+            alert('PIN incorreto.');
+        }
+    }
+});
 let historicoIndex = -1;
 let panzoomInstance = null;
 let imagemOriginal = null;
@@ -621,11 +764,10 @@ function ocultarLoading() {
 const POSICAO_DATA = { x: 223, y: 88 };
 const btnData = document.getElementById('toolData');
 
-function desenharDataAutomatica() {
+function desenharDataAutomatica(dataParaDesenhar) {
     if (!imagemCarregada) return;
 
-    const hoje = new Date();
-    const dataFormatada = hoje.toLocaleDateString('pt-BR');
+    const dataFormatada = dataParaDesenhar || new Date().toLocaleDateString('pt-BR');
 
     const tamanhoFonte = Math.max(14, Math.floor(canvas.width * 0.018));
 
@@ -651,7 +793,7 @@ function desenharDataAutomatica() {
     ctx.fillStyle = "#000000";
     ctx.fillText(dataFormatada, POSICAO_DATA.x, POSICAO_DATA.y);
 
-    salvarEstado();
+    if (!suprimirHistorico) salvarEstado();
 }
 
 // ==================== FUNÇÕES DE HISTÓRICO ====================
@@ -659,10 +801,11 @@ function salvarEstado() {
     historicoIndex++;
     if (historicoIndex < historico.length) {
         historico = historico.slice(0, historicoIndex);
+        ordemAcoes = ordemAcoes.slice(0, historicoIndex);
     }
     historico.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    ordemAcoes.push(proximoTipoAcao);
     atualizarBotaoUndo();
-    salvarImagemNoStorage();
 }
 
 function atualizarBotaoUndo() {
@@ -677,17 +820,31 @@ function colorsMatch(a, b, tolerance = 30) {
            Math.abs(a[3] - b[3]) <= tolerance;
 }
 
+// Preenche a área clicada usando uma JANELA LOCAL ao redor do ponto, em vez da
+// imagem inteira — os ícones do mapa são pequenos, então isso evita alocar
+// buffers gigantes (imagem inteira) para preencher uma área minúscula.
+const JANELA_PREENCHIMENTO = 200; // distância, em pixels, para cada lado do clique
+
 function executarBaldeDeTinta(x, y, corForcada) {
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const minX = Math.max(0, x - JANELA_PREENCHIMENTO);
+    const minY = Math.max(0, y - JANELA_PREENCHIMENTO);
+    const maxX = Math.min(canvas.width, x + JANELA_PREENCHIMENTO);
+    const maxY = Math.min(canvas.height, y + JANELA_PREENCHIMENTO);
+    const width = maxX - minX;
+    const height = maxY - minY;
+
+    const imageData = ctx.getImageData(minX, minY, width, height);
     const data = imageData.data;
-    const width = canvas.width;
-    const height = canvas.height;
 
-    const pos = (y * width + x) * 4;
+    // Coordenadas relativas ao início da janela local.
+    const lx = x - minX;
+    const ly = y - minY;
+
+    const pos = (ly * width + lx) * 4;
     const targetColor = [data[pos], data[pos+1], data[pos+2], data[pos+3]];
-    const fillColor = corForcada || corAtual;
+    const fillColor = corForcada;
 
-    if (colorsMatch(targetColor, fillColor, 0)) return;
+    if (colorsMatch(targetColor, fillColor, 0)) return false;
 
     // Pilha plana (Int32Array) em vez de array de arrays — evita criação excessiva
     // de objetos e reduz pressão no garbage collector em WebViews mais lentas.
@@ -695,7 +852,7 @@ function executarBaldeDeTinta(x, y, corForcada) {
     const stackX = new Int32Array(maxStack);
     const stackY = new Int32Array(maxStack);
     let stackLen = 0;
-    stackX[stackLen] = x; stackY[stackLen] = y; stackLen++;
+    stackX[stackLen] = lx; stackY[stackLen] = ly; stackLen++;
 
     const visited = new Uint8Array(width * height);
 
@@ -725,8 +882,9 @@ function executarBaldeDeTinta(x, y, corForcada) {
         if (cy - 1 >= 0)     { stackX[stackLen] = cx;     stackY[stackLen] = cy - 1; stackLen++; }
     }
 
-    ctx.putImageData(imageData, 0, 0);
-    salvarEstado();
+    ctx.putImageData(imageData, minX, minY);
+    if (!suprimirHistorico) salvarEstado();
+    return true;
 }
 
 // ==================== COORDENAÇÃO IMAGEM / STORAGE ====================
@@ -736,48 +894,64 @@ function carregarImagemFixa() {
     img.onload = function() {
         canvas.width = img.naturalWidth;
         canvas.height = img.naturalHeight;
-
-        const savedData = localStorage.getItem('imagem_carregada');
-        if (savedData) {
-            const restaurarImg = new Image();
-            restaurarImg.onload = function() {
-                ctx.drawImage(restaurarImg, 0, 0);
-                concluirCarregamento(img);
-            };
-            restaurarImg.src = savedData;
-        } else {
-            ctx.drawImage(img, 0, 0);
-            concluirCarregamento(img);
-        }
+        ctx.drawImage(img, 0, 0);
+        concluirCarregamento(img);
     };
     img.src = IMG_URL;
+}
+
+// Repinta o mapa do zero (imagem original + tudo que está registrado nas
+// variáveis de estado): nível de areia, defeitos, linhas e carimbo de data.
+// Usada tanto no carregamento inicial quanto ao aplicar dados vindos do Firestore.
+function repintarMapaCompleto() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(imagemOriginal, 0, 0);
+    Object.keys(estadoNivelAreia).forEach(function(nome) {
+        if (estadoNivelAreia[nome] === 'cheio') {
+            const ponto = MAPA_NIVEL_AREIA[nome];
+            if (ponto) executarBaldeDeTinta(ponto.x, ponto.y, COR_AMARELO_AREIA);
+        }
+    });
+    pendencias.forEach(function(p) {
+        pintarEquipamentoComCor(p.equipamento, COR_VERMELHO_DEFEITO);
+    });
+    Object.keys(estadoLinhas).forEach(function(nome) {
+        if (estadoLinhas[nome] === 'parada') {
+            const ponto = MAPA_LINHAS[nome];
+            if (ponto) executarBaldeDeTinta(ponto.x, ponto.y, COR_VERMELHO_DEFEITO);
+        }
+    });
+    if (dataRegistrada) desenharDataAutomatica(dataRegistrada);
 }
 
 function concluirCarregamento(imgOriginal) {
     imagemOriginal = imgOriginal;
     imagemCarregada = true;
+
+    // Repinta com o que já estava salvo localmente (rápido, funciona até offline).
+    // O listener do Firestore confirma ou corrige isso assim que a resposta chegar.
+    suprimirHistorico = true;
+    repintarMapaCompleto();
+    suprimirHistorico = false;
+
     historico = [];
+    ordemAcoes = [];
     historicoIndex = -1;
+    proximoTipoAcao = { tipo: 'manual' };
     salvarEstado();
+
     document.getElementById('downloadBtn').disabled = false;
     initPanzoom();
     ocultarLoading();
+    renderizarUltimaAlteracao();
 
     if (dadosRemotosPendentes) {
         window.aplicarDadosRemotos(dadosRemotosPendentes);
         dadosRemotosPendentes = null;
     }
-}
 
-function salvarImagemNoStorage() {
-    if (imagemCarregada) {
-        try {
-            const dataUrl = canvas.toDataURL('image/png');
-            localStorage.setItem('imagem_carregada', dataUrl);
-        } catch (e) {
-            console.error("Erro ao salvar no LocalStorage: ", e);
-        }
-    }
+    aplicarModoInterface();
+    if (modoEdicao && nomeUsuario) iniciarPresenca();
 }
 
 function initPanzoom() {
@@ -792,64 +966,66 @@ function initPanzoom() {
     zoomContainer.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel, { passive: false });
 }
 
-function resetImagem() {
-    if (imagemOriginal) {
-        mostrarLoading("Resetando mapa...");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(imagemOriginal, 0, 0);
-        historico = [];
-        historicoIndex = -1;
-        salvarEstado();
-        if (panzoomInstance) panzoomInstance.reset();
+function atualizarDoBanco() {
+    if (typeof window.firestoreBuscarUmaVez !== 'function') return;
+    mostrarLoading("Atualizando...");
+    window.firestoreBuscarUmaVez().then(function(dados) {
+        if (dados) window.aplicarDadosRemotos(dados);
         ocultarLoading();
-
-        // O mapa voltou ao estado original (tudo verde) — a listagem de
-        // defeitos registrados também é limpa pra ficar tudo em sincronia.
-        if (pendencias.length > 0) {
-            pendencias = [];
-            salvarPendenciasNoStorage();
-            renderizarPendencias();
-        }
-        estadoLinhas = {};
-        enviarEstadoParaFirestore();
-    }
+    }).catch(function(e) {
+        console.error("Erro ao atualizar do banco de dados:", e);
+        ocultarLoading();
+        alert("Não foi possível atualizar agora. Verifique sua internet.");
+    });
 }
 
 // ==================== EVENTOS DO MAPA ====================
-btnData.onclick = desenharDataAutomatica;
+btnData.onclick = function() {
+    if (!imagemCarregada) return;
+    const dataAnterior = dataRegistrada;
+    dataRegistrada = new Date().toLocaleDateString('pt-BR');
+    proximoTipoAcao = { tipo: 'data', anterior: dataAnterior };
+    desenharDataAutomatica(dataRegistrada);
+    enviarEstadoParaFirestore();
+};
 
 document.getElementById('undoBtn').addEventListener('click', () => {
     if (historicoIndex > 0) {
+        const acaoDesfeita = ordemAcoes[historicoIndex];
         historicoIndex--;
         ctx.putImageData(historico[historicoIndex], 0, 0);
+        ordemAcoes = ordemAcoes.slice(0, historicoIndex + 1);
         atualizarBotaoUndo();
-        salvarImagemNoStorage();
 
-        // Mantém a listagem de defeitos em sincronia: remove o último item
-        // registrado (o desenho já voltou ao estado anterior automaticamente).
-        if (pendencias.length > 0) {
-            pendencias.pop();
-            salvarPendenciasNoStorage();
-            renderizarPendencias();
+        if (!acaoDesfeita) return;
+
+        if (acaoDesfeita.tipo === 'equipamento') {
+            // Mantém a listagem de defeitos em sincronia: remove o último item
+            // registrado (o desenho já voltou ao estado anterior automaticamente).
+            if (pendencias.length > 0) {
+                pendencias.pop();
+                salvarPendenciasNoStorage();
+                renderizarPendencias();
+            }
+        } else if (acaoDesfeita.tipo === 'linha') {
+            estadoLinhas[acaoDesfeita.nome] = acaoDesfeita.anterior;
+            enviarEstadoParaFirestore();
+        } else if (acaoDesfeita.tipo === 'nivel') {
+            estadoNivelAreia[acaoDesfeita.nome] = acaoDesfeita.anterior;
+            enviarEstadoParaFirestore();
+        } else if (acaoDesfeita.tipo === 'data') {
+            dataRegistrada = acaoDesfeita.anterior || null;
+            enviarEstadoParaFirestore();
         }
     }
 });
 
-document.getElementById('resetBtn').addEventListener('click', resetImagem);
-
-document.querySelectorAll('.cor').forEach(c => {
-    c.addEventListener('click', function() {
-        document.querySelectorAll('.cor').forEach(el => el.classList.remove('selecionada'));
-        this.classList.add('selecionada');
-
-        const rgb = window.getComputedStyle(this).backgroundColor.match(/\d+/g);
-        corAtual = [parseInt(rgb[0]), parseInt(rgb[1]), parseInt(rgb[2]), 255];
-    });
-});
+document.getElementById('atualizarBtn').addEventListener('click', atualizarDoBanco);
 
 // Clique preciso no canvas considerando o zoom/pan do Panzoom
 canvas.addEventListener("click", function(e) {
     if (!imagemCarregada) return;
+    if (!modoEdicao) return;
 
     const rect = canvas.getBoundingClientRect();
 
@@ -874,7 +1050,10 @@ canvas.addEventListener("click", function(e) {
         if (linhaClicada) {
             alternarStatusLinha(linhaClicada);
         } else {
-            executarBaldeDeTinta(x, y);
+            const nivelClicado = encontrarNivelPorClique(x, y);
+            if (nivelClicado) {
+                alternarNivelAreia(nivelClicado);
+            }
         }
     }
 });
@@ -892,14 +1071,9 @@ document.getElementById('downloadBtnModal').onclick = () => {
         link.click();
         URL.revokeObjectURL(url);
 
-        salvarImagemNoStorage();
         document.getElementById('modal').style.display = 'none';
     }, 'image/png');
 };
-
-window.addEventListener('beforeunload', () => {
-    if (imagemCarregada) salvarImagemNoStorage();
-});
 
 // ============================================================
 // ===============  MÓDULO DE DEFEITOS (RELATÓRIO) ============
@@ -989,6 +1163,8 @@ const MAPA_COORDENADAS = {
 // usada para devolver o equipamento ao status operacional.
 const COR_VERDE_OPERACIONAL = [58, 190, 85, 255];
 const COR_VERMELHO_DEFEITO = [255, 0, 0, 255];
+const COR_AMARELO_AREIA = [255, 255, 0, 255];
+const COR_BRANCO_SEM_AREIA = [255, 255, 255, 255];
 
 // Pinta o contorno do equipamento mapeado com a cor informada.
 function pintarEquipamentoComCor(nomeEquipamento, cor) {
@@ -1001,6 +1177,7 @@ function pintarEquipamentoComCor(nomeEquipamento, cor) {
     const { x, y } = ponto;
     if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) return;
 
+    proximoTipoAcao = { tipo: 'equipamento' };
     executarBaldeDeTinta(x, y, cor);
 }
 
@@ -1021,16 +1198,131 @@ const MAPA_LINHAS = {
 };
 const RAIO_TOQUE_LINHA = 25; // tolerância em pixels para reconhecer o toque num círculo de linha
 
+// --- Nível de areia (parte interna de VAS e SILOs): toque alterna branco <-> amarelo ---
+// Coordenadas geradas pelo app Mapeador de Coordenadas.
+const MAPA_NIVEL_AREIA = {
+    "SILO7 NÍVEL BAIXO": { "x": 84, "y": 278 },
+    "SILO7 NÍVEL CHEIO": { "x": 84, "y": 248 },
+    "VAS 27": { "x": 109, "y": 320 },
+    "VAS 26": { "x": 112, "y": 517 },
+    "SILO6 NÍVEL BAIXO": { "x": 85, "y": 617 },
+    "SILO6 NÍVEL CHEIO": { "x": 84, "y": 589 },
+    "VAS 25": { "x": 108, "y": 657 },
+    "SILO5 NÍVEL BAIXO": { "x": 84, "y": 846 },
+    "SILO5 NÍVEL CHEIO": { "x": 84, "y": 816 },
+    "VAS 24": { "x": 109, "y": 887 },
+    "SILO13 NÍVEL BAIXO": { "x": 386, "y": 278 },
+    "SILO13 NÍVEL CHEIO": { "x": 385, "y": 249 },
+    "VAS 42": { "x": 414, "y": 319 },
+    "VAS 43": { "x": 362, "y": 318 },
+    "VAS 40": { "x": 414, "y": 516 },
+    "VAS 41": { "x": 363, "y": 516 },
+    "SILO12 NÍVEL BAIXO": { "x": 386, "y": 617 },
+    "SILO12 NÍVEL CHEIO": { "x": 384, "y": 589 },
+    "VAS 38": { "x": 411, "y": 658 },
+    "VAS 39": { "x": 358, "y": 658 },
+    "VAS 36": { "x": 415, "y": 888 },
+    "VAS 37": { "x": 361, "y": 887 },
+    "SILO11 NÍVEL BAIXO": { "x": 386, "y": 845 },
+    "SILO11 NÍVEL CHEIO": { "x": 387, "y": 816 },
+    "VAS 28": { "x": 727, "y": 888 },
+    "VAS 29": { "x": 674, "y": 888 },
+    "SILO8 NÍVEL BAIXO": { "x": 699, "y": 845 },
+    "SILO8 NÍVEL CHEIO": { "x": 699, "y": 816 },
+    "VAS 31": { "x": 674, "y": 657 },
+    "VAS 30": { "x": 727, "y": 657 },
+    "SILO9 NÍVEL BAIXO": { "x": 700, "y": 616 },
+    "SILO9 NÍVEL CHEIO": { "x": 699, "y": 589 },
+    "VAS 32": { "x": 726, "y": 515 },
+    "VAS 33": { "x": 676, "y": 516 },
+    "VAS 34": { "x": 726, "y": 318 },
+    "VAS 35": { "x": 673, "y": 319 },
+    "SILO10 NÍVEL BAIXO": { "x": 699, "y": 277 },
+    "SILO10 NÍVEL CHEIO": { "x": 700, "y": 247 },
+    "SILO4 NÍVEL BAIXO": { "x": 1003, "y": 278 },
+    "SILO4 NÍVEL CHEIO": { "x": 1003, "y": 247 },
+    "VAS 23": { "x": 980, "y": 319 },
+    "VAS 22": { "x": 980, "y": 517 },
+    "VAS 21": { "x": 980, "y": 658 },
+    "VAS 20": { "x": 976, "y": 886 },
+    "SILO3 NÍVEL BAIXO": { "x": 1004, "y": 616 },
+    "SILO3 NÍVEL CHEIO": { "x": 1004, "y": 587 },
+    "SILO2 NÍVEL BAIXO": { "x": 1003, "y": 846 },
+    "SILO2 NÍVEL CHEIO": { "x": 1003, "y": 818 },
+    "VAS 17": { "x": 816, "y": 1230 },
+    "MOEGA": { "x": 816, "y": 1170 },
+    "VAS 18": { "x": 771, "y": 1385 },
+    "VAS 19": { "x": 834, "y": 1384 },
+    "SILO1 PRIMEIRO NÍVEL": { "x": 803, "y": 1352 },
+    "SILO1 SEGUNDO NÍVEL": { "x": 796, "y": 1333 },
+    "SILO1 NÍVEL CHEIO": { "x": 795, "y": 1315 }
+};
+
 // Guarda o status de cada linha ("operacional" ou "parada") para sincronizar com o Firestore.
 let estadoLinhas = {};
+// Guarda o status de cada ponto de nível de areia ("cheio" ou "vazio") para sincronizar com o Firestore.
+let estadoNivelAreia = {};
 let aplicandoAtualizacaoRemota = false; // evita loop ao reaplicar dados recebidos do servidor
 let dadosRemotosPendentes = null; // guarda dados recebidos antes da imagem terminar de carregar
 
+// Tolerância bem menor que a das linhas: os 3 níveis do SILO 01 ficam a
+// só ~18px um do outro, então uma tolerância grande faria o toque num
+// nível acabar alternando o vizinho por engano.
+const RAIO_TOQUE_NIVEL = 8;
+
+// Retorna o nome do ponto de nível de areia se o clique caiu perto dele, ou null.
+function encontrarNivelPorClique(x, y) {
+    for (const nome in MAPA_NIVEL_AREIA) {
+        const p = MAPA_NIVEL_AREIA[nome];
+        if (Math.hypot(p.x - x, p.y - y) <= RAIO_TOQUE_NIVEL) return nome;
+    }
+    return null;
+}
+
+// Alterna o ponto entre Sem areia (branco) e Com areia (amarelo).
+function alternarNivelAreia(nomePonto) {
+    const p = MAPA_NIVEL_AREIA[nomePonto];
+    if (!p) return;
+    const pixel = ctx.getImageData(p.x, p.y, 1, 1).data;
+    const corDoPixel = [pixel[0], pixel[1], pixel[2], pixel[3]];
+    const estaCheio = colorsMatch(corDoPixel, COR_AMARELO_AREIA, 30);
+    const novaCor = estaCheio ? COR_BRANCO_SEM_AREIA : COR_AMARELO_AREIA;
+    const estadoAnterior = estadoNivelAreia[nomePonto] || 'vazio';
+
+    proximoTipoAcao = { tipo: 'nivel', nome: nomePonto, anterior: estadoAnterior };
+    executarBaldeDeTinta(p.x, p.y, novaCor);
+    estadoNivelAreia[nomePonto] = estaCheio ? 'vazio' : 'cheio';
+    registrarAtividade((estaCheio ? 'Esvaziou ' : 'Marcou areia em ') + nomePonto);
+    enviarEstadoParaFirestore();
+}
+
+// Guarda uma cópia local leve (JSON, sem PNG) para carregar rápido mesmo offline.
+function salvarEstadoLocalCompleto() {
+    try {
+        localStorage.setItem('estado_local_completo', JSON.stringify({
+            pendencias: pendencias,
+            linhas: estadoLinhas,
+            niveis: estadoNivelAreia,
+            dataRegistrada: dataRegistrada,
+            ultimaAlteracao: ultimaAlteracao
+        }));
+    } catch (e) {
+        console.error("Erro ao salvar estado local:", e);
+    }
+}
+
 // Envia o estado atual (pendências + linhas) para o Firestore, visível a todos os usuários.
 function enviarEstadoParaFirestore() {
+    salvarEstadoLocalCompleto();
     if (aplicandoAtualizacaoRemota) return;
     if (typeof window.firestoreSalvarEstado === 'function') {
-        window.firestoreSalvarEstado({ pendencias: pendencias, linhas: estadoLinhas });
+        window.firestoreSalvarEstado({
+            pendencias: pendencias,
+            linhas: estadoLinhas,
+            niveis: estadoNivelAreia,
+            dataRegistrada: dataRegistrada,
+            ultimaAlteracao: ultimaAlteracao
+        });
     }
 }
 
@@ -1042,20 +1334,27 @@ window.aplicarDadosRemotos = function(dados) {
 
     pendencias = dados.pendencias || [];
     estadoLinhas = dados.linhas || {};
-    salvarPendenciasNoStorage();
+    estadoNivelAreia = dados.niveis || {};
+    dataRegistrada = dados.dataRegistrada || null;
+    ultimaAlteracao = dados.ultimaAlteracao || null;
+    renderizarUltimaAlteracao();
+    salvarEstadoLocalCompleto();
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(imagemOriginal, 0, 0);
-    pendencias.forEach(function(p) {
-        pintarEquipamentoComCor(p.equipamento, COR_VERMELHO_DEFEITO);
-    });
-    Object.keys(estadoLinhas).forEach(function(nome) {
-        if (estadoLinhas[nome] === 'parada') {
-            const ponto = MAPA_LINHAS[nome];
-            if (ponto) executarBaldeDeTinta(ponto.x, ponto.y, COR_VERMELHO_DEFEITO);
-        }
-    });
-    salvarImagemNoStorage();
+    renderizarPresenca(dados.presencas || {});
+
+    // Reconstrói o mapa inteiro de uma vez. Suprime o histórico de desfazer
+    // durante a reconstrução para não gerar dezenas de leituras/gravações
+    // pesadas à toa — só o estado final importa para o Desfazer local.
+    suprimirHistorico = true;
+    repintarMapaCompleto();
+    suprimirHistorico = false;
+
+    historico = [];
+    ordemAcoes = [];
+    historicoIndex = -1;
+    proximoTipoAcao = { tipo: 'manual' };
+    salvarEstado();
+
     renderizarPendencias();
 
     aplicandoAtualizacaoRemota = false;
@@ -1078,9 +1377,12 @@ function alternarStatusLinha(nomeLinha) {
     const corDoPixel = [pixel[0], pixel[1], pixel[2], pixel[3]];
     const estaParada = colorsMatch(corDoPixel, COR_VERMELHO_DEFEITO, 30);
     const novaCor = estaParada ? COR_VERDE_OPERACIONAL : COR_VERMELHO_DEFEITO;
+    const estadoAnterior = estadoLinhas[nomeLinha] || 'operacional';
+
+    proximoTipoAcao = { tipo: 'linha', nome: nomeLinha, anterior: estadoAnterior };
     executarBaldeDeTinta(p.x, p.y, novaCor);
     estadoLinhas[nomeLinha] = estaParada ? 'operacional' : 'parada';
-    salvarImagemNoStorage();
+    registrarAtividade('Marcou ' + nomeLinha + ' como ' + (estaParada ? 'OPERACIONAL' : 'PARADA'));
     enviarEstadoParaFirestore();
 }
 
@@ -1095,8 +1397,8 @@ const filtroSilos = document.getElementById('filtroSilos');
 const selectDefeito = document.getElementById('selectDefeito');
 const mfOutroWrapper = document.getElementById('mfOutroWrapper');
 const mfOutroInput = document.getElementById('mfOutroInput');
+const mfNotaInput = document.getElementById('mfNotaInput');
 const adicionarDefeitoBtn = document.getElementById('adicionarDefeitoBtn');
-const listaPendenciasHome = document.getElementById('listaPendenciasHome');
 const listaPendenciasModal = document.getElementById('listaPendenciasModal');
 const badgeDefeitos = document.getElementById('badgeDefeitos');
 const compartilharBtn = document.getElementById('compartilharBtn');
@@ -1125,21 +1427,30 @@ optOutro.textContent = "✍️ Outro defeito... (Digitar)";
 selectDefeito.appendChild(optOutro);
 
 // --- Persistência ---
-function carregarPendenciasDoStorage() {
+function carregarEstadoLocalDoStorage() {
+    // Remove o cache antigo e pesado (imagem inteira em PNG) que não é mais usado.
+    try { localStorage.removeItem('imagem_carregada'); } catch (e) { /* ignora */ }
+
     try {
-        const raw = localStorage.getItem('pendencias_defeitos');
-        pendencias = raw ? JSON.parse(raw) : [];
+        const raw = localStorage.getItem('estado_local_completo');
+        if (raw) {
+            const dados = JSON.parse(raw);
+            pendencias = dados.pendencias || [];
+            estadoLinhas = dados.linhas || {};
+            estadoNivelAreia = dados.niveis || {};
+            dataRegistrada = dados.dataRegistrada || null;
+            ultimaAlteracao = dados.ultimaAlteracao || null;
+            return;
+        }
+        // Compatibilidade com a versão anterior do app (antes desta limpeza).
+        const rawAntigo = localStorage.getItem('pendencias_defeitos');
+        pendencias = rawAntigo ? JSON.parse(rawAntigo) : [];
     } catch (e) {
         pendencias = [];
     }
 }
 
 function salvarPendenciasNoStorage() {
-    try {
-        localStorage.setItem('pendencias_defeitos', JSON.stringify(pendencias));
-    } catch (e) {
-        console.error("Erro ao salvar pendências: ", e);
-    }
     enviarEstadoParaFirestore();
 }
 
@@ -1202,7 +1513,14 @@ function atualizarEstadoBotaoAdicionar() {
 
 // --- Render das listas (home + modal compartilham a mesma estrutura) ---
 function renderizarPendencias() {
+    // Evita reconstruir a lista (e tirar o foco do teclado) enquanto alguém
+    // está digitando numa nota. Assim que o campo perder o foco, a lista
+    // é atualizada normalmente (ver evento 'blur' mais abaixo).
+    if (focoNotaAtivo) return;
+
     const total = pendencias.length;
+
+    document.getElementById('contadorItensLista').textContent = total > 0 ? '(' + total + ')' : '';
 
     compartilharBtn.disabled = total === 0;
 
@@ -1213,7 +1531,7 @@ function renderizarPendencias() {
         badgeDefeitos.textContent = total > 99 ? '99+' : String(total);
     }
 
-    [listaPendenciasHome, listaPendenciasModal].forEach(container => {
+    [listaPendenciasModal].forEach(container => {
         container.innerHTML = '';
         if (total === 0) {
             const vazio = document.createElement('div');
@@ -1232,12 +1550,15 @@ function renderizarPendencias() {
 
             const texto = document.createElement('span');
             texto.className = 'pendencia-texto';
-            texto.innerHTML = '<b>' + escapeHTML(p.equipamento) + '</b>: ' + escapeHTML(p.defeito);
+            texto.innerHTML = '<b>' + escapeHTML(p.equipamento) + '</b>: ' + escapeHTML(p.defeito) +
+                (p.autor ? ' <span style="color:var(--text-muted); font-weight:400;">(' + escapeHTML(p.autor) + ')</span>' : '');
 
             const delBtn = document.createElement('button');
             delBtn.className = 'pendencia-del';
             delBtn.textContent = '✕';
             delBtn.onclick = () => removerPendencia(index);
+            delBtn.style.pointerEvents = modoEdicao ? '' : 'none';
+            delBtn.style.opacity = modoEdicao ? '' : '0.4';
 
             topRow.appendChild(texto);
             topRow.appendChild(delBtn);
@@ -1254,6 +1575,13 @@ function renderizarPendencias() {
             notaInput.placeholder = 'Nota de manutenção (opcional)';
             notaInput.value = p.nota || '';
             notaInput.addEventListener('input', () => atualizarNotaPendencia(index, notaInput.value));
+            notaInput.addEventListener('focus', () => { focoNotaAtivo = true; });
+            notaInput.addEventListener('blur', () => {
+                focoNotaAtivo = false;
+                renderizarPendencias(); // agora sim atualiza a lista, sem atrapalhar a digitação
+            });
+            if (!modoEdicao) notaInput.readOnly = true;
+            notaInput.style.opacity = modoEdicao ? '' : '0.4';
 
             notaRow.appendChild(notaIcone);
             notaRow.appendChild(notaInput);
@@ -1272,18 +1600,24 @@ function escapeHTML(str) {
 }
 
 let notaSalvarTimeout = null;
+let focoNotaAtivo = false; // true enquanto o usuário está digitando numa nota
 function atualizarNotaPendencia(index, valor) {
     if (!pendencias[index]) return;
     pendencias[index].nota = valor;
 
-    // Debounce: evita gravar no localStorage a cada tecla digitada.
+    // Debounce: evita gravar no localStorage/log a cada tecla digitada.
     clearTimeout(notaSalvarTimeout);
-    notaSalvarTimeout = setTimeout(salvarPendenciasNoStorage, 400);
+    notaSalvarTimeout = setTimeout(function() {
+        if (!pendencias[index]) return;
+        registrarAtividade('Atualizou a nota de ' + pendencias[index].equipamento);
+        salvarPendenciasNoStorage();
+    }, 400);
 }
 
 function removerPendencia(index) {
     const equipamentoRemovido = pendencias[index].equipamento;
     pendencias.splice(index, 1);
+    registrarAtividade('Removeu o defeito de ' + equipamentoRemovido);
     salvarPendenciasNoStorage();
     renderizarPendencias();
 
@@ -1301,7 +1635,11 @@ adicionarDefeitoBtn.addEventListener('click', function() {
 
     if (!equipamento || !defeito) return;
 
-    pendencias.push({ equipamento: equipamento, defeito: defeito, nota: "" });
+    const notaDigitada = mfNotaInput.value.trim();
+    const nota = notaDigitada || 'Aguardando nota de manutenção';
+
+    pendencias.push({ equipamento: equipamento, defeito: defeito, nota: nota, autor: nomeUsuario || 'Anônimo' });
+    registrarAtividade('Registrou defeito em ' + equipamento + ': ' + defeito);
     salvarPendenciasNoStorage();
     renderizarPendencias();
 
@@ -1313,6 +1651,7 @@ adicionarDefeitoBtn.addEventListener('click', function() {
     selectDefeito.value = "";
     mfOutroInput.value = "";
     mfOutroWrapper.style.display = 'none';
+    mfNotaInput.value = "";
     atualizarEstadoBotaoAdicionar();
 });
 
@@ -1408,7 +1747,7 @@ async function compartilharRelatorio() {
 compartilharBtn.addEventListener('click', compartilharRelatorio);
 
 // --- Inicialização do módulo de defeitos ---
-carregarPendenciasDoStorage();
+carregarEstadoLocalDoStorage();
 renderizarPendencias();
 
 // Inicialização do mapa
